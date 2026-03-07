@@ -6,6 +6,7 @@ class ContactModel {
   final bool isSynced;
   final int createdAt;
   final int updatedAt;
+  final bool isFavorite;
 
   ContactModel({
     required this.id,
@@ -15,6 +16,7 @@ class ContactModel {
     this.isSynced = false,
     required this.createdAt,
     required this.updatedAt,
+    this.isFavorite = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -26,6 +28,7 @@ class ContactModel {
       'isSynced': isSynced ? 1 : 0,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'isFavorite': isFavorite ? 1 : 0,
     };
   }
 
@@ -38,6 +41,7 @@ class ContactModel {
       isSynced: (json['isSynced'] ?? 0) == 1,
       createdAt: json['createdAt'] as int,
       updatedAt: json['updatedAt'] as int,
+      isFavorite: (json['isFavorite'] ?? 0) == 1,
     );
   }
 
@@ -49,6 +53,7 @@ class ContactModel {
       'email': email,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'isFavorite': isFavorite,
     };
   }
 
@@ -61,6 +66,7 @@ class ContactModel {
       isSynced: true,
       createdAt: data['createdAt'] as int,
       updatedAt: data['updatedAt'] as int,
+      isFavorite: data['isFavorite'] ?? false,
     );
   }
 }

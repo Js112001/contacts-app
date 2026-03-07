@@ -1,6 +1,8 @@
 import '../../data/models/contact_model.dart';
 
 class ContactEntity extends ContactModel {
+  final bool isFavorite;
+
   ContactEntity({
     required super.id,
     required super.name,
@@ -9,6 +11,7 @@ class ContactEntity extends ContactModel {
     super.isSynced,
     required super.createdAt,
     required super.updatedAt,
+    this.isFavorite = false,
   });
 
   factory ContactEntity.fromModel(ContactModel model) {
@@ -20,6 +23,7 @@ class ContactEntity extends ContactModel {
       isSynced: model.isSynced,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
+      isFavorite: model.isFavorite,
     );
   }
 
@@ -32,6 +36,7 @@ class ContactEntity extends ContactModel {
       isSynced: isSynced,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      isFavorite: isFavorite,
     );
   }
 }

@@ -23,7 +23,9 @@ class LocalDatabaseService {
 
   Future<void> updateContact(ContactModel contact) async {
     final db = await SQLiteDatabase.instance;
-    await db.update('contacts', contact.toJson(), where: 'id = ?', whereArgs: [contact.id]);
+    final updateData = contact.toJson();
+    updateData['isSynced'] = 0; // Mark as unsynced after update
+    await db.update('contacts', updateData, where: 'id = ?', whereArgs: [contact.id]);
   }
 
   Future<void> deleteContact(String id) async {

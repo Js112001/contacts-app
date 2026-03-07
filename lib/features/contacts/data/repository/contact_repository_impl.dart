@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../../domain/entities/contact_entity.dart';
 import '../../domain/repository/contact_repository.dart';
 import '../services/firebase_contact_service.dart';
@@ -16,12 +17,11 @@ class ContactRepositoryImpl implements ContactRepository {
       for (var contact in firebaseContacts) {
         await _localService.insertContact(contact);
       }
-      final localContacts = await _localService.getAllContacts();
-      return localContacts.map((model) => ContactEntity.fromModel(model)).toList();
     } catch (e) {
-      final localContacts = await _localService.getAllContacts();
-      return localContacts.map((model) => ContactEntity.fromModel(model)).toList();
+      debugPrint('Firebase sync failed: $e');
     }
+    final localContacts = await _localService.getAllContacts();
+    return localContacts.map((model) => ContactEntity.fromModel(model)).toList();
   }
 
   @override
@@ -33,24 +33,46 @@ class ContactRepositoryImpl implements ContactRepository {
   @override
   Future<void> addContact(ContactEntity contact) async {
     final model = contact.toModel();
+    
+    // Check for duplicates
+    final existingContacts = await _localService.getAllContacts();
+    final isDuplicate = existingContacts.any((c) => 
+      (c.name.toLowerCase() == model.name.toLowerCase() || c.phone == model.phone) && c.id != model.id
+    );
+    
+    if (isDuplicate) {
+      throw Exception('Contact with same name or phone already exists');
+    }
+    
     await _localService.insertContact(model);
     try {
       await _firebaseService.addContact(model);
       await _localService.markAsSynced(contact.id);
     } catch (e) {
-      // Will sync later
+      debugPrint('Firebase add failed, will sync later: $e');
     }
   }
 
   @override
   Future<void> updateContact(ContactEntity contact) async {
     final model = contact.toModel();
+    
+    // Check for duplicates (excluding current contact)
+    final existingContacts = await _localService.getAllContacts();
+    final isDuplicate = existingContacts.any((c) => 
+      (c.name.toLowerCase() == model.name.toLowerCase() || c.phone == model.phone) && c.id != model.id
+    );
+    
+    if (isDuplicate) {
+      throw Exception('Contact with same name or phone already exists');
+    }
+    
     await _localService.updateContact(model);
     try {
       await _firebaseService.updateContact(model);
       await _localService.markAsSynced(contact.id);
     } catch (e) {
-      // Will sync later
+      debugPrint('Firebase update failed, will sync later: $e');
     }
   }
 
@@ -60,20 +82,40 @@ class ContactRepositoryImpl implements ContactRepository {
     try {
       await _firebaseService.deleteContact(id);
     } catch (e) {
-      // Ignore if offline
+      debugPrint('Firebase delete failed: $e');
     }
   }
 
   @override
   Future<void> syncContacts() async {
     try {
-      final unsyncedContacts = await _localService.getUnsyncedContacts();
-      for (var contact in unsyncedContacts) {
-        await _firebaseService.addContact(contact);
-        await _localService.markAsSynced(contact.id);
+      final firestoreSnapshot = await _firebaseService.getAllContacts();
+      final isFirestoreEmpty = firestoreSnapshot.isEmpty;
+      
+      if (isFirestoreEmpty) {
+        final allLocalContacts = await _localService.getAllContacts();
+        for (var contact in allLocalContacts) {
+          try {
+            await _firebaseService.addContact(contact);
+            await _localService.markAsSynced(contact.id);
+          } catch (e) {
+            debugPrint('Failed to sync contact ${contact.id}: $e');
+          }
+        }
+      } else {
+        final unsyncedContacts = await _localService.getUnsyncedContacts();
+        for (var contact in unsyncedContacts) {
+          try {
+            await _firebaseService.addContact(contact);
+            await _localService.markAsSynced(contact.id);
+          } catch (e) {
+            debugPrint('Failed to sync contact ${contact.id}: $e');
+          }
+        }
       }
     } catch (e) {
-      // Sync failed
+      debugPrint('Sync operation failed: $e');
+      rethrow;
     }
   }
 }

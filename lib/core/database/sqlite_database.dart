@@ -30,7 +30,8 @@ class SQLiteDatabase {
         email TEXT,
         isSynced INTEGER DEFAULT 0,
         createdAt INTEGER NOT NULL,
-        updatedAt INTEGER NOT NULL
+        updatedAt INTEGER NOT NULL,
+        isFavorite INTEGER DEFAULT 0
       )
     ''');
   }
