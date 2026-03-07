@@ -1,0 +1,41 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "contacts-app-429f3",
+          "appId": "1:159173503694:android:d5b8798140eb859bce7e9f",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "contacts-app-429f3",
+          "appId": "1:159173503694:ios:24c91e17b3007bbcce7e9f",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "contacts-app-429f3",
+          "appId": "1:159173503694:ios:24c91e17b3007bbcce7e9f",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "contacts-app-429f3",
+          "configurations": {
+            "android": "1:159173503694:android:d5b8798140eb859bce7e9f",
+            "ios": "1:159173503694:ios:24c91e17b3007bbcce7e9f",
+            "macos": "1:159173503694:ios:24c91e17b3007bbcce7e9f",
+            "web": "1:159173503694:web:86765d5772a19946ce7e9f",
+            "windows": "1:159173503694:web:39d42cc13ae2410bce7e9f"
+          }
+        }
+      }
+    }
+  }
+}
