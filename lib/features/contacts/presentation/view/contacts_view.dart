@@ -234,9 +234,10 @@ class _ContactsViewState extends State<ContactsView> {
             itemBuilder: (context) {
               final state = context.read<ContactBloc>().state;
               final showRestore = state is ContactLoaded && state.isFirestoreEmpty;
+              final showBulkAdd = state is ContactLoaded && state.contacts.isEmpty && !_bulkContactsAdded;
               
               return [
-                if (!_bulkContactsAdded)
+                if (showBulkAdd)
                   const PopupMenuItem(
                     value: 'add50',
                     child: Text('Add 50 Contacts'),
