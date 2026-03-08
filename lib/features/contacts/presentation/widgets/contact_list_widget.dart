@@ -101,6 +101,7 @@ class _ContactListWidgetState extends State<ContactListWidget> {
                 email: contact.email,
                 isFavorite: contact.isFavorite,
                 onTap: () {
+                  FocusScope.of(context).unfocus();
                   Navigator.push(
                     context,
                     MaterialPageRoute(

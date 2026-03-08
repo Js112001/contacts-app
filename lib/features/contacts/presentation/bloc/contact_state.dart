@@ -51,7 +51,4 @@ class ContactError extends ContactState {
   ContactError(this.message);
 }
 
-class ContactOperationSuccess extends ContactState {
-  final String message;
-  ContactOperationSuccess(this.message);
-}
+class ContactOperationSuccess extends ContactState {}

@@ -116,6 +116,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
   Future<void> _onAddContact(AddContactEvent event, Emitter<ContactState> emit) async {
     try {
       await addContactUseCase(event.contact);
+      emit(ContactOperationSuccess());
       _allContacts = await getAllContactsUseCase();
       final paginatedContacts = _allContacts.take(20).toList();
       final unsyncedCount = _allContacts.where((c) => !c.isSynced).length;

@@ -243,6 +243,7 @@ class _ContactsViewState extends State<ContactsView> {
           : const ContactListWidget(showFavoritesOnly: false),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          FocusScope.of(context).unfocus();
           await Navigator.push(
             context,
             MaterialPageRoute(
