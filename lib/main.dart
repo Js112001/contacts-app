@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'firebase_options.dart';
-import 'package:contacts_app/core/service_locator.dart';
+import 'package:contacts_app/core/di/service_locator.dart';
 import 'package:contacts_app/core/theme/theme_cubit.dart';
 import 'features/contacts/presentation/view/home_screen.dart';
 import 'features/contacts/presentation/bloc/contact_bloc.dart';
