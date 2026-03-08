@@ -1,16 +1,165 @@
-# contacts_app
+# Contacts App
 
-A new Flutter project.
+A modern Flutter contacts management application with offline-first architecture, Firebase sync, and direct calling functionality.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+### Core Functionality
+- **CRUD Operations**: Create, read, update, and delete contacts
+- **Offline-First**: SQLite local database with automatic Firebase synchronization
+- **Direct Calling**: Make phone calls directly from the app (like Truecaller)
+- **Favorites**: Mark contacts as favorites for quick access
+- **Search**: Real-time search by name, phone, or email
+- **Pagination**: Efficient loading of contacts (20 per page)
 
-A few resources to get you started if this is your first Flutter project:
+### Data Management
+- **Dual Storage**: Firebase Firestore for cloud storage + SQLite for offline access
+- **Auto-Sync**: Automatic synchronization between local and cloud databases
+- **Sync Indicator**: Visual badge showing unsynced contacts count
+- **Restore Capability**: Restore all contacts to Firebase if collection is deleted
+- **Duplicate Prevention**: Validates and prevents duplicate contacts by name or phone
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### User Interface
+- **Material Design 3**: Modern, intuitive UI with Material 3 components
+- **Theme Support**: Light, dark, and system default themes with persistent storage
+- **Bottom Navigation**: Easy navigation between Contacts and Favorites
+- **Responsive Design**: Adapts to various screen sizes and orientations
+- **Empty States**: Helpful messages when no contacts are found
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Validation
+- **Name**: Minimum 2 characters, letters and spaces only
+- **Phone**: 10-15 digits with optional + prefix
+- **Email**: Valid email format (optional field)
+
+### Architecture
+- **Clean Architecture**: Separation of concerns with data, domain, and presentation layers
+- **BLoC Pattern**: State management using flutter_bloc
+- **Dependency Injection**: get_it for service locator pattern
+- **Repository Pattern**: Abstract data sources for testability
+
+## Installation
+
+### Prerequisites
+- Flutter SDK (^3.10.3)
+- Dart SDK
+- Firebase account
+- iOS Simulator or Android Emulator
+
+### Setup Steps
+
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd contacts_app
+```
+
+2. **Install dependencies**
+```bash
+flutter pub get
+```
+
+3. **Configure Firebase**
+```bash
+# Install Firebase CLI
+npm install -g firebase-tools
+
+# Login to Firebase
+firebase login
+
+# Configure FlutterFire
+flutterfire configure --project=contacts-app --platforms=android,ios
+```
+
+4. **Add platform-specific permissions**
+
+**Android** (`android/app/src/main/AndroidManifest.xml`):
+```xml
+<uses-permission android:name="android.permission.CALL_PHONE"/>
+<uses-permission android:name="android.permission.INTERNET"/>
+```
+
+**iOS** (`ios/Runner/Info.plist`):
+```xml
+<key>NSContactsUsageDescription</key>
+<string>This app needs access to make phone calls</string>
+```
+
+5. **Run the app**
+```bash
+# For iOS
+flutter run -d "iPhone 16 Pro"
+
+# For Android
+flutter run -d <device-id>
+```
+
+## Project Structure
+
+```
+lib/
+├── core/
+│   ├── database/
+│   │   ├── firebase_service.dart
+│   │   └── sqlite_database.dart
+│   ├── theme/
+│   │   └── theme_cubit.dart
+│   └── service_locator.dart
+├── features/
+│   └── contacts/
+│       ├── data/
+│       │   ├── models/
+│       │   ├── repository/
+│       │   └── services/
+│       ├── domain/
+│       │   ├── entities/
+│       │   ├── repository/
+│       │   └── usecases/
+│       └── presentation/
+│           ├── bloc/
+│           ├── view/
+│           └── widgets/
+└── main.dart
+```
+
+## Dependencies
+
+- **firebase_core**: ^3.8.1
+- **cloud_firestore**: ^5.5.1
+- **sqflite**: ^2.4.1
+- **flutter_bloc**: ^8.1.6
+- **get_it**: ^8.0.2
+- **flutter_phone_direct_caller**: ^2.2.1
+- **shared_preferences**: ^2.3.3
+
+## Usage
+
+### Adding Contacts
+1. Tap the + button on the Contacts tab
+2. Fill in name, phone, and optional email
+3. Tap the checkmark to save
+
+### Calling Contacts
+- Tap the call icon on any contact card
+- Or open contact details and tap the "Call" button
+
+### Managing Favorites
+- Tap the heart icon to add/remove from favorites
+- View all favorites in the Favorites tab
+
+### Syncing Data
+- Sync icon appears when there are unsynced contacts
+- Tap the sync icon to sync with Firebase
+- Badge shows count of unsynced contacts
+
+### Bulk Operations
+- Use the menu (⋮) to add 50 test contacts
+- Use "Restore to Firebase" if cloud data is lost
+
+### Changing Theme
+- Tap the brightness icon in the app bar
+- Choose Light, Dark, or System Default
+- Theme preference is saved automatically
+
+## License
+
+This project is a Flutter learning application.
