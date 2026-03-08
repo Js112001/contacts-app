@@ -70,7 +70,32 @@ firebase login
 flutterfire configure --project=contacts-app --platforms=android,ios
 ```
 
-4. **Run the app**
+4. **Setup Firestore Database**
+- Go to [Firebase Console](https://console.firebase.google.com)
+- Select your project
+- Navigate to **Firestore Database** from the left menu
+- Click **Create Database**
+- Choose **Start in test mode** (for development)
+- Select a location and click **Enable**
+
+5. **Configure Firestore Rules**
+
+In Firebase Console, go to **Firestore Database > Rules** and set:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /contacts/{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+
+**Note**: These are public rules for development. For production, implement proper authentication and security rules.
+
+6. **Run the app**
 ```bash
 # For iOS
 flutter run -d "iPhone 16 Pro"
@@ -85,7 +110,6 @@ flutter run -d <device-id>
 lib/
 ├── core/
 │   ├── database/
-│   │   ├── firebase_service.dart
 │   │   └── sqlite_database.dart
 │   ├── theme/
 │   │   └── theme_cubit.dart
@@ -94,16 +118,38 @@ lib/
 │   └── contacts/
 │       ├── data/
 │       │   ├── models/
+│       │   │   └── contact_model.dart
 │       │   ├── repository/
+│       │   │   └── contact_repository_impl.dart
 │       │   └── services/
+│       │       ├── firebase_contact_service.dart
+│       │       └── local_database_service.dart
 │       ├── domain/
 │       │   ├── entities/
+│       │   │   └── contact_entity.dart
 │       │   ├── repository/
+│       │   │   └── contact_repository.dart
 │       │   └── usecases/
+│       │       ├── add_contact_usecase.dart
+│       │       ├── delete_contact_usecase.dart
+│       │       ├── get_all_contacts_usecase.dart
+│       │       ├── sync_contacts_usecase.dart
+│       │       └── update_contact_usecase.dart
 │       └── presentation/
 │           ├── bloc/
+│           │   ├── contact_bloc.dart
+│           │   ├── contact_event.dart
+│           │   └── contact_state.dart
 │           ├── view/
+│           │   ├── add_edit_contact_screen.dart
+│           │   ├── contact_details_screen.dart
+│           │   ├── contacts_view.dart
+│           │   ├── favorites_view.dart
+│           │   └── home_screen.dart
 │           └── widgets/
+│               ├── contact_card_widget.dart
+│               ├── contact_list_widget.dart
+│               └── empty_state_widget.dart
 └── main.dart
 ```
 
