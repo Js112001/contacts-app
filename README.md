@@ -70,21 +70,7 @@ firebase login
 flutterfire configure --project=contacts-app --platforms=android,ios
 ```
 
-4. **Add platform-specific permissions**
-
-**Android** (`android/app/src/main/AndroidManifest.xml`):
-```xml
-<uses-permission android:name="android.permission.CALL_PHONE"/>
-<uses-permission android:name="android.permission.INTERNET"/>
-```
-
-**iOS** (`ios/Runner/Info.plist`):
-```xml
-<key>NSContactsUsageDescription</key>
-<string>This app needs access to make phone calls</string>
-```
-
-5. **Run the app**
+4. **Run the app**
 ```bash
 # For iOS
 flutter run -d "iPhone 16 Pro"
