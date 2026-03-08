@@ -4,6 +4,12 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>tel</string>
+    </array>
+    <key>NSContactsUsageDescription</key>
+    <string>This app needs access to make phone calls</string>
 	<key>CFBundleDisplayName</key>
 	<string>Contacts App</string>
 	<key>CFBundleExecutable</key>
