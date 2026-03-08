@@ -2,6 +2,7 @@ import 'package:contacts_app/features/contacts/presentation/bloc/contact_state.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../widgets/contact_list_widget.dart';
 import '../bloc/contact_bloc.dart';
@@ -18,10 +19,13 @@ class ContactsView extends StatefulWidget {
 class _ContactsViewState extends State<ContactsView> {
   final TextEditingController _searchController = TextEditingController();
   bool _isAddingContacts = false;
+  bool _bulkContactsAdded = false;
+  static const String _bulkContactsKey = 'bulk_contacts_added';
 
   @override
   void initState() {
     super.initState();
+    _loadBulkContactsFlag();
     // Check Firestore status after initial load
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
@@ -30,34 +34,61 @@ class _ContactsViewState extends State<ContactsView> {
     });
   }
 
+  Future<void> _loadBulkContactsFlag() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _bulkContactsAdded = prefs.getBool(_bulkContactsKey) ?? false;
+    });
+  }
+
+  Future<void> _saveBulkContactsFlag() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_bulkContactsKey, true);
+  }
+
   Future<void> _bulkAddContacts() async {
     setState(() => _isAddingContacts = true);
     
     final firestore = FirebaseFirestore.instance;
     final contactsRef = firestore.collection('contacts');
-    final firstNames = ['John', 'Jane', 'Bob', 'Alice', 'Charlie', 'Emma', 'David', 'Sarah', 'Michael', 'Lisa'];
-    final lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+    
+    // Names starting with each letter A-Z
+    final names = [
+      'Alice Anderson', 'Bob Brown', 'Charlie Clark', 'David Davis', 'Emma Evans',
+      'Frank Foster', 'Grace Green', 'Henry Harris', 'Ivy Jackson', 'Jack Johnson',
+      'Kate King', 'Liam Lewis', 'Mia Martin', 'Noah Nelson', 'Olivia Oliver',
+      'Paul Parker', 'Quinn Roberts', 'Ryan Robinson', 'Sophia Smith', 'Thomas Taylor',
+      'Uma Turner', 'Victor Walker', 'Wendy White', 'Xavier Young', 'Yara Adams',
+      'Zoe Baker', 'Aaron Bennett', 'Bella Brooks', 'Chris Campbell', 'Diana Cooper',
+      'Ethan Edwards', 'Fiona Fisher', 'George Gray', 'Hannah Hall', 'Isaac Hughes',
+      'Julia James', 'Kevin Kelly', 'Laura Lee', 'Mason Moore', 'Nora Murphy',
+      'Oscar Phillips', 'Piper Powell', 'Quincy Reed', 'Ruby Rogers', 'Samuel Scott',
+      'Tara Stewart', 'Ulysses Torres', 'Violet Ward', 'William Watson', 'Xander Wood'
+    ];
 
     try {
-      for (int i = 1; i <= 50; i++) {
-        final firstName = firstNames[i % firstNames.length];
-        final lastName = lastNames[(i ~/ firstNames.length) % lastNames.length];
-        final name = '$firstName $lastName $i';
+      for (int i = 0; i < 50 && i < names.length; i++) {
+        final timestamp = DateTime.now().millisecondsSinceEpoch + i;
+        final nameParts = names[i].split(' ');
+        final firstName = nameParts[0].toLowerCase();
+        final lastName = nameParts[1].toLowerCase();
         
         final contact = {
-          'id': 'contact_${DateTime.now().millisecondsSinceEpoch}_$i',
-          'name': name,
-          'phone': '+1${(2000000000 + DateTime.now().millisecondsSinceEpoch % 1000000 + i).toString()}',
-          'email': '${firstName.toLowerCase()}.${lastName.toLowerCase()}$i@example.com',
+          'id': 'contact_${timestamp}',
+          'name': names[i],
+          'phone': '+1${(2000000000 + i).toString()}',
+          'email': '$firstName.$lastName@example.com',
           'isFavorite': i % 5 == 0,
-          'createdAt': DateTime.now().millisecondsSinceEpoch,
-          'updatedAt': DateTime.now().millisecondsSinceEpoch,
+          'createdAt': timestamp,
+          'updatedAt': timestamp,
         };
 
         await contactsRef.doc(contact['id'] as String).set(contact);
       }
       
       if (mounted) {
+        await _saveBulkContactsFlag();
+        setState(() => _bulkContactsAdded = true);
         context.read<ContactBloc>().add(LoadContactsEvent());
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Successfully added 50 contacts!')),
@@ -205,10 +236,11 @@ class _ContactsViewState extends State<ContactsView> {
               final showRestore = state is ContactLoaded && state.isFirestoreEmpty;
               
               return [
-                const PopupMenuItem(
-                  value: 'add50',
-                  child: Text('Add 50 Contacts'),
-                ),
+                if (!_bulkContactsAdded)
+                  const PopupMenuItem(
+                    value: 'add50',
+                    child: Text('Add 50 Contacts'),
+                  ),
                 if (showRestore)
                   const PopupMenuItem(
                     value: 'restore',
