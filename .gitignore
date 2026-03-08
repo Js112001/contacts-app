@@ -35,6 +35,11 @@ migrate_working_dir/
 pubspec.lock
 Podfile.lock
 
+# Firebase
+firebase_options.dart
+google-services.json
+GoogleService-Info.plist
+
 # Symbolication related
 app.*.symbols
 
